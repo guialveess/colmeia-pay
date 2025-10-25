@@ -7,14 +7,23 @@ let db: ReturnType<typeof drizzle>;
 
 if (process.env.DATABASE_URL) {
   console.log('Connection - Using DATABASE_URL:', process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':***@'));
-  pool = new Pool({
+
+  // Only use SSL in production
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  const poolConfig: any = {
     connectionString: process.env.DATABASE_URL,
     max: 20,
     connectionTimeoutMillis: 10000,
-    ssl: {
+  };
+
+  if (isProduction) {
+    poolConfig.ssl = {
       rejectUnauthorized: false
-    }
-  });
+    };
+  }
+
+  pool = new Pool(poolConfig);
 } else {
   console.log('Connection - Using individual DB parameters');
   pool = new Pool({

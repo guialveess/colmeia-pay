@@ -2,6 +2,25 @@
 
 API RESTful para um sistema de pagamentos simplificado desenvolvido com **Bun**, **Elysia**, **PostgreSQL** e **Drizzle ORM** seguindo os princípios da **Clean Architecture**.
 
+## ⚡ Quick Start (3 minutos)
+
+```bash
+# 1. Clonar e entrar no projeto
+git clone <repository-url>
+cd colmeia-pay
+
+# 2. Executar setup automático
+./setup.sh
+
+# 3. Iniciar servidor
+bun run dev
+```
+
+🎉 **Pronto!** Acesse `http://localhost:3000/openapi` para ver a documentação interativa.
+
+**Dados de teste já criados:**
+- Cliente: `d9ntxrdi4i3alurwws7w6j5c`
+
 <img width="1396" height="911" alt="image" src="https://github.com/user-attachments/assets/3e906f20-804f-4f69-92e7-28fe8f233ca3" />
 
 ## Funcionalidades Implementadas
@@ -34,13 +53,48 @@ API RESTful para um sistema de pagamentos simplificado desenvolvido com **Bun**,
 - Tratamento de erros robusto
 - Schema completo do banco de dados
 
-## Pré-requisitos
+## 🚀 Setup Automático (Recomendado)
+
+**Execute um único comando para configurar tudo do zero:**
+
+```bash
+git clone <repository-url>
+cd colmeia-pay
+./setup.sh
+```
+
+O script `setup.sh` vai:
+- ✅ Verificar instalações necessárias (Bun, Docker)
+- ✅ Instalar dependências do projeto
+- ✅ Configurar variáveis de ambiente
+- ✅ Iniciar PostgreSQL com Docker
+- ✅ Configurar banco de dados automaticamente
+- ✅ Criar dados de teste
+- ✅ Verificar se tudo está funcionando
+
+**Após o setup, inicie o servidor:**
+```bash
+bun run dev
+```
+
+---
+
+## 📋 Pré-requisitos
+
+Caso prefira configuração manual, você precisará de:
 
 - **Bun** >= 1.0.0
-- **Docker** e **Docker Compose** (para PostgreSQL)
-- Variáveis de ambiente configuradas
+  ```bash
+  curl -fsSL https://bun.sh/install | bash
+  ```
 
-## Instalação e Configuração
+- **Docker** e **Docker Compose**
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac)
+  - [Docker Engine](https://docs.docker.com/engine/install/) (Linux)
+
+---
+
+## 🔧 Configuração Manual
 
 ### 1. Clonar o repositório
 ```bash
@@ -55,37 +109,30 @@ bun install
 
 ### 3. Configurar variáveis de ambiente
 ```bash
-cp .env.example .env
-# As credenciais já estão configuradas para usar com Docker (postgres/postgres)
+# Usar ambiente de desenvolvimento (já configurado)
+cp .env.development .env
 ```
 
-### 4. Iniciar PostgreSQL com Docker
+### 4. Iniciar PostgreSQL
 ```bash
-# Iniciar o container PostgreSQL
-./start-db.sh
+# Para desenvolvimento local
+docker-compose -f docker-compose.dev.yml up -d
 
-# Ou manualmente:
-docker-compose up -d
-
-# Verificar se o banco está pronto
-docker-compose ps
+# Aguardar o banco ficar pronto (cerca de 10 segundos)
+docker-compose -f docker-compose.dev.yml ps
 ```
 
-### 5. Configurar Banco de Dados
+### 5. Configurar banco de dados
 ```bash
-# Gerar migrações com base no schema
+# Gerar migrações
 bun run db:generate
 
-# Aplicar migrações no banco
+# Aplicar migrações
 bun run db:migrate
 
-# Criar dados iniciais essenciais
+# Criar dados iniciais
 bun run db:setup
 ```
-
-O comando `bun run db:setup` irá:
-- Criar merchant padrao (`cldefaultmerchant0001`)
-- Criar cliente de teste (`d9ntxrdi4i3alurwws7w6j5c`)
 
 ### 6. Iniciar o servidor
 ```bash
@@ -97,16 +144,93 @@ O servidor estará rodando em `http://localhost:3000`
 ### 7. Comandos Docker Úteis
 ```bash
 # Verificar logs do PostgreSQL
-docker-compose logs postgres
+docker-compose -f docker-compose.dev.yml logs postgres
 
 # Parar o PostgreSQL
-docker-compose down
+docker-compose -f docker-compose.dev.yml down
 
 # Reiniciar o PostgreSQL
-docker-compose restart
+docker-compose -f docker-compose.dev.yml restart
 
 # Acessar o banco diretamente
-docker-compose exec postgres psql -U postgres -d colmeia_pay
+docker-compose -f docker-compose.dev.yml exec postgres psql -U postgres -d colmeia_pay
+
+# Verificar status dos containers
+docker-compose -f docker-compose.dev.yml ps
+```
+
+### 8. Dados de Teste Criados Automaticamente
+
+Após executar `bun run db:setup`, o sistema cria:
+
+- **Merchant padrão**: `cldefaultmerchant0001`
+- **Cliente de teste**: `d9ntxrdi4i3alurwws7w6j5c`
+
+Estes dados podem ser usados imediatamente para testar a API!
+
+### 9. Verificação Rápida
+
+**Verifique se tudo está funcionando:**
+
+```bash
+# 1. Verificar se o servidor está rodando
+curl -s http://localhost:3000/openapi/json | jq .info.title
+
+# 2. Criar usuário para teste
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "senha123", "name": "Test User"}'
+
+# 3. Fazer login com o usuário criado
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "senha123"}'
+
+# 4. Listar clientes (deve retornar o cliente de teste)
+curl -X GET "http://localhost:3000/customers?page=1&limit=10" \
+  -H "Authorization: Bearer TOKEN_DO_LOGIN"
+```
+
+## 🔧 Solução de Problemas
+
+### Problema: "Error: connect ECONNREFUSED 127.0.0.1:5432"
+**Causa:** PostgreSQL não está rodando
+**Solução:**
+```bash
+docker-compose -f docker-compose.dev.yml up -d
+sleep 10
+docker-compose -f docker-compose.dev.yml ps
+```
+
+### Problema: "The server does not support SSL connections"
+**Causa:** Configuração SSL em desenvolvimento
+**Solução:** Já foi corrigido! O código agora usa SSL apenas em produção.
+
+### Problema: "Failed to create charge" - Internal Server Error
+**Solução:** Recrie o banco do zero:
+```bash
+# Parar o banco
+docker-compose -f docker-compose.dev.yml down
+
+# Remover volume (apaga dados antigos)
+docker volume rm colmeia-pay_postgres_dev_data
+
+# Reiniciar setup completo
+./setup.sh
+```
+
+### Problema: Porta 3000 já está em uso
+**Solução:** Mude a porta no .env:
+```bash
+echo "PORT=3001" >> .env
+bun run dev
+```
+
+### Problema: Permissão negada no setup.sh
+**Solução:**
+```bash
+chmod +x setup.sh
+./setup.sh
 ```
 
 ## 📚 Documentacao OpenAPI
