@@ -37,7 +37,7 @@ API RESTful para um sistema de pagamentos simplificado desenvolvido com **Bun**,
 ## Pré-requisitos
 
 - **Bun** >= 1.0.0
-- **PostgreSQL** >= 13
+- **Docker** e **Docker Compose** (para PostgreSQL)
 - Variáveis de ambiente configuradas
 
 ## Instalação e Configuração
@@ -56,10 +56,22 @@ bun install
 ### 3. Configurar variáveis de ambiente
 ```bash
 cp .env.example .env
-# Editar .env com suas credenciais do PostgreSQL
+# As credenciais já estão configuradas para usar com Docker (postgres/postgres)
 ```
 
-### 4. Configurar Banco de Dados
+### 4. Iniciar PostgreSQL com Docker
+```bash
+# Iniciar o container PostgreSQL
+./start-db.sh
+
+# Ou manualmente:
+docker-compose up -d
+
+# Verificar se o banco está pronto
+docker-compose ps
+```
+
+### 5. Configurar Banco de Dados
 ```bash
 # Gerar migrações com base no schema
 bun run db:generate
@@ -75,12 +87,27 @@ O comando `bun run db:setup` irá:
 - Criar merchant padrao (`cldefaultmerchant0001`)
 - Criar cliente de teste (`d9ntxrdi4i3alurwws7w6j5c`)
 
-### 5. Iniciar o servidor
+### 6. Iniciar o servidor
 ```bash
 bun run dev
 ```
 
 O servidor estará rodando em `http://localhost:3000`
+
+### 7. Comandos Docker Úteis
+```bash
+# Verificar logs do PostgreSQL
+docker-compose logs postgres
+
+# Parar o PostgreSQL
+docker-compose down
+
+# Reiniciar o PostgreSQL
+docker-compose restart
+
+# Acessar o banco diretamente
+docker-compose exec postgres psql -U postgres -d colmeia_pay
+```
 
 ## 📚 Documentacao OpenAPI
 
@@ -483,6 +510,22 @@ curl -X GET "http://localhost:3000/charges"
 ---
 
 ## Resolucao de Problemas Comuns
+
+### Problema: "Error: connect ECONNREFUSED 127.0.0.1:5432"
+
+Este erro ocorre quando o PostgreSQL não está rodando na porta 5432.
+
+**Solução:**
+```bash
+# 1. Iniciar o PostgreSQL com Docker
+./start-db.sh
+
+# 2. Verificar se o container está rodando
+docker-compose ps
+
+# 3. Aguardar alguns segundos e tentar novamente
+bun run db:migrate
+```
 
 ### Problema: "Failed to create charge" - Internal Server Error
 
