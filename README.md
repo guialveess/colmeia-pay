@@ -140,6 +140,48 @@ bun run dev
 
 O servidor estará rodando em `http://localhost:3000`
 
+## 🚨 Solução de Erros Comuns
+
+### Erro: "relation already exists"
+**Causa:** Banco de dados já existe de execuções anteriores
+**Solução:** Limpe completamente o PostgreSQL:
+```bash
+# Parar e remover volume antigo
+docker-compose -f docker-compose.dev.yml down -v
+docker volume rm colmeia-pay_postgres_dev_data
+
+# Reiniciar do passo 4
+docker-compose -f docker-compose.dev.yml up -d
+bun run db:migrate
+bun run db:setup
+```
+
+### Erro: "No file ./drizzle/0000_xxx.sql found"
+**Causa:** Arquivos de migração não foram gerados
+**Solução:** Force recriação das migrações:
+```bash
+rm -rf drizzle/
+bun run db:generate
+bun run db:migrate
+```
+
+### Erro: "DATABASE_URL undefined"
+**Causa:** Arquivo .env não existe ou está vazio
+**Solução:** Verifique se copiou o arquivo:
+```bash
+ls -la .env
+# Se não existir:
+cp .env.example .env
+```
+
+### Dica Rápida
+Se encontrar qualquer erro durante o setup, execute o script automático:
+```bash
+./setup.sh
+```
+
+O script limpa automaticamente o banco e reconfigura tudo do zero!
+
 ### 7. Comandos Docker Úteis
 ```bash
 # Verificar logs do PostgreSQL
