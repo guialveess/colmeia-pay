@@ -14,7 +14,7 @@ async function createMerchant() {
 
   try {
     const merchant = {
-      id: "cldefaultmerchant0001", // Mesmo ID do controller
+      id: "cldefaultmerchant0001",
       name: "Default Merchant",
       slug: "default-merchant",
       website: "https://colmeia-pay.example.com",
@@ -24,9 +24,9 @@ async function createMerchant() {
     };
 
     await db.insert(merchants).values(merchant).onConflictDoNothing();
-    console.log('✅ Merchant criado com sucesso:', merchant.id);
+    console.log('Merchant criado com sucesso:', merchant.id);
   } catch (error) {
-    console.error('❌ Erro ao criar merchant:', error);
+    console.error('Erro ao criar merchant:', error);
   } finally {
     await client.end();
   }
