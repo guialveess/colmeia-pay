@@ -2,6 +2,8 @@
 
 API RESTful para um sistema de pagamentos simplificado desenvolvido com **Bun**, **Elysia**, **PostgreSQL** e **Drizzle ORM** seguindo os princípios da **Clean Architecture**.
 
+<img width="1908" height="955" alt="image" src="https://github.com/user-attachments/assets/686ca723-6e99-49e1-9912-93d3cdda3541" />
+
 ## ⚡ Quick Start (3 minutos)
 
 ```bash
@@ -1136,3 +1138,4 @@ Este projeto esta sob licenca MIT. Veja o arquivo `LICENSE` para detalhes.
 ---
 
 **O sistema esta completo, funcional e pronto!**
+
