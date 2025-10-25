@@ -60,7 +60,6 @@ bun run dev
 ```bash
 git clone <repository-url>
 cd colmeia-pay
-./setup.sh
 ```
 
 O script `setup.sh` vai:
@@ -109,8 +108,8 @@ bun install
 
 ### 3. Configurar variáveis de ambiente
 ```bash
-# Usar ambiente de desenvolvimento (já configurado)
-cp .env.development .env
+# Copiar arquivo de ambiente de exemplo (já configurado para desenvolvimento)
+cp .env.example .env
 ```
 
 ### 4. Iniciar PostgreSQL
