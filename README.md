@@ -2,6 +2,8 @@
 
 API RESTful para um sistema de pagamentos simplificado desenvolvido com **Bun**, **Elysia**, **PostgreSQL** e **Drizzle ORM** seguindo os princípios da **Clean Architecture**.
 
+<img width="1396" height="911" alt="image" src="https://github.com/user-attachments/assets/3e906f20-804f-4f69-92e7-28fe8f233ca3" />
+
 ## Funcionalidades Implementadas
 
 ### **Modulo de Autenticacao**
